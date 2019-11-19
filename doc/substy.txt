@@ -1,0 +1,173 @@
+*substy.txt*    Quickly input substitution command.           *substy*
+
+Version: 0.1.0
+Author : tkhren <m.tkhren@gmail.com>
+License: MIT LICENSE
+
+==============================================================================
+CONTENTS                                                    *substy-contents*
+
+INTRODUCTION                                            |substy-introduction|
+INTERFACE                                               |substy-interface|
+EXAMPLE                                                 |substy-example|
+
+==============================================================================
+INTRODUCTION                                            *substy-introduction*
+
+vim-substy is a Vim plugin to provide mapping functions
+to quickly input substitution command.
+
+Latest version:
+https://github.com/tkhren/vim-substy
+
+==============================================================================
+INTERFACE                                                   *substy-interface*
+
+Variables ~
+                                                            *substy-variables*
+
+g:substy#substitute_default_flag            *g:substy#substitute_default_flag*
+        (Default: 'g')
+        Default substitution flag (|s_flags|) that is used
+        in |substy#substitute()| and |substy#substitute_operator()|
+
+------------------------------------------------------------------------------
+Functions ~
+                                                            *substy-functions*
+
+                                                         *substy#substitute()*
+substy#substitute({magic}, {pattern}, {replacement}, [{flag}])
+        Insert substitution command and move cursor to input quickly.
+        In normal mode, insert `:%s/{pattern}/{replacement}/{flag}`
+        In visual-char mode, insert `:%s/{pattern}/{replacement}/{flag}`
+        In visual-line or visual-block mode,
+        insert `:'<,'>s/{pattern}/{replacement}/{flag}`
+
+        When {pattern} is blank and it was called from visual-char mode,
+        a selected text will be used as a pattern.
+
+        If {magic} is given, {pattern} will be escaped.
+        Where {magic} must be either |\v|, |\m|, |\M| or |\V|
+        If {magic} is blank, it does not implicitly escape {pattern}.
+        This behavior would be useful for a pattern that should not be
+        further escaped like |@/|.
+
+        If you omit {flag}, it uses |g:substy#substitute_default_flag|
+>
+        noremap <expr> ss substy#substitute('', '', '')
+                                    "=> (NORMAL) :%s/_//g
+                                    "=> (V-CHAR) :%s/{SELTEXT}/_/g
+                                    "=> (V-LINE) :'<,'>s/_//g
+        noremap <expr> ss substy#substitute('\m', '', '')
+                                    "=> (NORMAL) :%s/_//g
+                                    "=> (V-CHAR) :%s/{ESCAPE(SELTEXT)}/_/g
+                                    "=> (V-LINE) :'<,'>s/_//g
+        noremap <expr> ss substy#substitute('\v', '', '')
+                                    "=> (NORMAL) :%s/\v_//g
+                                    "=> (V-CHAR) :%s/\v{ESCAPE(SELTEXT)}/_/g
+                                    "=> (V-LINE) :'<,'>s/\v_//g
+        noremap <expr> s/ substy#substitute('', @/, '')
+                                    "=> (NORMAL) :%s/{@/}/_/g
+                                    "=> (V-CHAR) :%s/{@/}/_/g
+                                    "=> (V-LINE) :'<,'>s/{@/}/_/g
+        noremap <expr> s"" substy#substitute('\m', @", '')
+                                    "=> (NORMAL) :%s/{ESCAPE(@")}/_/g
+                                    "=> (V-CHAR) :%s/{ESCAPE(@")}/_/g
+                                    "=> (V-LINE) :'<,'>s/{ESCAPE(@")}/_/g
+        noremap <expr> s"" substy#substitute('\v', @", '')
+                                    "=> (NORMAL) :%s/\v{ESCAPE(@")}/_/g
+                                    "=> (V-CHAR) :%s/\v{ESCAPE(@")}/_/g
+                                    "=> (V-LINE) :'<,'>s/\v{ESCAPE(@")}/_/g
+<
+substy#substitute_operator({magic})             *substy#substitute_operator()*
+        An operator version of |substy#substitute()|.
+        It is used accompanying with |{motion}| or |text-objects|
+>
+        nnoremap <expr> s substy#substitute_operator('')
+                                    "=> (NORMAL) :%s/{TEXTOBJ}/_/g
+        nnoremap <expr> s substy#substitute_operator('\m')
+                                    "=> (NORMAL) :%s/{ESCAPE(TEXTOBJ)}/_/g
+        nnoremap <expr> s substy#substitute_operator('\v')
+                                    "=> (NORMAL) :%s/\v{ESCAPE(TEXTOBJ)}/_/g
+<
+        For example,
+        To use a word under the cursor as pattern, type `siw`
+        To use the inside of `()` as pattern, type `si)`
+        To use the inside of `''` as pattern, type `si'`
+        To use a range from the cursor to the end-of-line as pattern, type `s$`
+
+substy#global({magic}, {pattern}, {cmd})                     *substy#global()*
+substy#vglobal({magic}, {pattern}, {cmd})                   *substy#vglobal()*
+        Insert `:g` command and move cursor to input quickly.
+        In normal mode, insert `:g/{pattern}/{cmd}`
+        In visual-char mode, insert `:g/{pattern}/{cmd}`
+        In visual-line or visual-block mode,
+        insert `:'<,'>g/{pattern}/{cmd}`
+
+        When {pattern} is blank and it was called from visual-char mode,
+        a selected text will be used as a pattern.
+
+        If {magic} is given, {pattern} will be escaped.
+        Where {magic} must be either |\v|, |\m|, |\M| or |\V|
+        If {magic} is blank, it does not implicitly escape {pattern}.
+        This behavior would be useful for a pattern that should not be
+        further escaped like |@/|.
+>
+        noremap <expr> sg substy#global('\m', '', '')
+                                    "=> (NORMAL) :g/_/
+                                    "=> (V-CHAR) :g/{ESCAPE(SELTEXT)}/_
+                                    "=> (V-LINE) :'<,'>g/_/
+        noremap <expr> sd substy#global('', @/, 'd')
+                                    "=> (NORMAL) :g/{@/}/d_
+                                    "=> (V-CHAR) :g/{@/}/d_
+                                    "=> (V-LINE) :'<,'>g/{@/}/d_
+<
+substy#global_operator({magic})                     *substy#global_operator()*
+substy#vglobal_operator({magic})                   *substy#vglobal_operator()*
+        An operator version of |substy#global()|.
+        It is used accompanying with |{motion}| or |text-objects|
+        It is the almost same with |substy#substitute_operator|
+
+substy#yank()                                                  *substy#yank()*
+        Extract last matches as lines and save to a register.
+        In normal mode, copy matches from all lines
+        In visual mode, copy matches from selected lines
+>
+        noremap <expr> sy substy#yank()
+<
+        After you searched something with `/` or `*`,
+        typing `sy`, extracted matches are copied.
+
+        The extracted matches are saved to v:register (usually `"`) by default.
+        So if you type `syp` in the normal mode, you can paste it easily.
+        If you need to use the other register, simply type like `"zsy` or `"*sy`
+
+        For example, after you searched with `/\<#\w\+`, typing `syp`,
+        a list of words which starts with # will be pasted.
+
+        If you need to get submatch of a pattern like `/\v(\w+)\s*:\s*(\w+)`,
+        Add {count} prior to the normal command.
+        For example, typing `1sy`, submatch(1) will be obtained.
+        When you type `2sy`, submatch(2) will be obtained.
+        If you omit {count}, submatch(0) will be obtained.
+
+==============================================================================
+EXAMPLE                                                         *substy-example*
+
+        This plugin does not provide any mappings by default.
+        Please paste the below code to your vimrc or init.vim
+>
+        nnoremap <expr> [sub] substy#substitute_operator('\m')
+        noremap <expr> [sub]s substy#substitute('\m', '', '')
+        noremap <expr> [sub]/ substy#substitute('', @/, '')
+        noremap <expr> [sub]? substy#substitute('', @/, @/)
+        noremap <expr> [sub]g substy#global('', @/, '')
+        noremap <expr> [sub]v substy#vglobal('', @/, '')
+        noremap <expr> [sub]y substy#yank()
+        for c in split('abcdefghijklmnopqrstuvwxyz0123456789*+.%/"', '\zs')
+            let mapcmd = 'noremap <expr> [sub]"%s substy#substitute("\\m", @%s, "")'
+            exec printf(mapcmd, c, c)
+        endfor
+<
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:fen:fdl=0:fdm=marker:

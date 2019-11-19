@@ -1,0 +1,7 @@
+*.bak
+*.lock
+*.pyc
+*.swp
+*~
+.directory
+.DS_Store
