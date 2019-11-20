@@ -5,9 +5,7 @@
 " Initialize variables
 let g:substy#substitute_default_flag = get(g:, 'substy#substitute_default_flag', 'g')
 let g:substy#_matches = []
-let s:substitute_operator_magic = ''
-let s:global_operator_magic = ''
-let s:vglobal_operator_magic = ''
+let s:placeholder = '{textobj}'
 
 function! s:escaped_pattern(magic, pattern_list) abort "{{{1
     let magic_chars = {
@@ -67,15 +65,26 @@ endfunction
 "}}}1
 
 function! substy#_substitute_operator(motion_wise) abort "{{{1
-    call substy#substitute(s:substitute_operator_magic,
-                        \ s:capture_selection('`[v`]'),
-                        \ '',
-                        \ g:substy#substitute_default_flag)
+    let selected_text = join(s:capture_selection('`[v`]'), '\n')
+    let s:operator_pattern = substitute(s:operator_pattern, s:placeholder, selected_text, 'g')
+    let s:operator_replacement = substitute(s:operator_replacement, s:placeholder, selected_text, 'g')
+
+    call substy#substitute(s:operator_magic,
+                        \ s:operator_pattern,
+                        \ s:operator_replacement,
+                        \ s:operator_flag)
 endfunction
 "}}}1
 
-function! substy#substitute_operator(magic) abort "{{{1
-    let s:substitute_operator_magic = a:magic
+function! substy#substitute_operator(magic, ...) abort "{{{1
+    " substy#substitute_operator({magic}, [{pattern}], [{replacement}], [{flag}])
+    " s:placeholder in the {pattern} and {replacement} will be substituted with text-object
+    " noremap <expr> S substy#substitute_operator('\m', '{textobj}', '{textobj}')
+    " This is hidden feature..., it may be remove in future.
+    let s:operator_magic = a:magic
+    let s:operator_pattern = (a:0 > 0) ? a:1 : s:placeholder
+    let s:operator_replacement = (a:0 > 1) ? a:2 : ''
+    let s:operator_flag = (a:0 > 2) ? a:3 : g:substy#substitute_default_flag
     set operatorfunc=substy#_substitute_operator
     return 'g@'
 endfunction
@@ -105,12 +114,12 @@ endfunction
 "}}}1
 
 function! substy#_global_operator(motion_wise) abort "{{{1
-    call substy#global(s:global_operator_magic, s:capture_selection('`[v`]'), '')
+    call substy#global(s:operator_magic, s:capture_selection('`[v`]'), '')
 endfunction
 "}}}1
 
 function! substy#global_operator(magic) abort "{{{1
-    let s:global_operator_magic = a:magic
+    let s:operator_magic = a:magic
     set operatorfunc=substy#_global_operator
     return 'g@'
 endfunction
@@ -140,12 +149,12 @@ endfunction
 "}}}1
 
 function! substy#_vglobal_operator(motion_wise) abort "{{{1
-    call substy#vglobal(s:vglobal_operator_magic, s:capture_selection('`[v`]'), '')
+    call substy#vglobal(s:operator_magic, s:capture_selection('`[v`]'), '')
 endfunction
 "}}}1
 
 function! substy#vglobal_operator(magic) abort "{{{1
-    let s:vglobal_operator_magic = a:magic
+    let s:operator_magic = a:magic
     set operatorfunc=substy#_vglobal_operator
     return 'g@'
 endfunction
@@ -163,14 +172,14 @@ endfunction
 function! substy#yank(...) abort "{{{1
     let pattern = (a:0 > 0) ? a:1 : ''
     let cmode = mode()
-    let srange = "'<,'>"
+    let crange = "'<,'>"
     if cmode ==# 'n' || cmode ==# 'v'
-        let srange = '%'
+        let crange = '%'
     endif
 
     let g:substy#_matches = []
     let replacement = printf('\=add(g:substy#_matches,submatch(%s))', v:count)
-    let command1 = printf(":\<C-u>%ss/%s/%s/gn\<CR>", srange, pattern, replacement)
+    let command1 = printf(":\<C-u>%ss/%s/%s/gn\<CR>", crange, pattern, replacement)
     let command2 = printf(":call substy#_yank('%s')\<CR>", v:register)
     call feedkeys(command1 . command2, 'in')
 endfunction

@@ -81,7 +81,7 @@ substy#substitute({magic}, {pattern}, {replacement}, [{flag}])
 <
 substy#substitute_operator({magic})             *substy#substitute_operator()*
         An operator version of |substy#substitute()|.
-        It is used accompanying with |{motion}| or |text-objects|
+        It is used accompanying with |motion| or |text-objects|
 >
         nnoremap <expr> s substy#substitute_operator('')
                                     "=> (NORMAL) :%s/{TEXTOBJ}/_/g
