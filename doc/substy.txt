@@ -145,7 +145,7 @@ substy#yank()                                                  *substy#yank()*
         For example, after you searched with `/\<#\w\+`, typing `syp`,
         a list of words which starts with # will be pasted.
 
-        If you need to get submatch of a pattern like `/\v(\w+)\s*:\s*(\w+)`,
+        If you need to get submatch of a pattern like `/\v(\w+):(\w+)`,
         Add {count} prior to the normal command.
         For example, typing `1sy`, submatch(1) will be obtained.
         When you type `2sy`, submatch(2) will be obtained.
@@ -157,15 +157,15 @@ EXAMPLE                                                         *substy-example*
         This plugin does not provide any mappings by default.
         Please paste the below code to your vimrc or init.vim
 >
-        nnoremap <expr> [sub] substy#substitute_operator('\m')
-        noremap <expr> [sub]s substy#substitute('\m', '', '')
-        noremap <expr> [sub]/ substy#substitute('', @/, '')
-        noremap <expr> [sub]? substy#substitute('', @/, @/)
-        noremap <expr> [sub]g substy#global('', @/, '')
-        noremap <expr> [sub]v substy#vglobal('', @/, '')
-        noremap <expr> [sub]y substy#yank()
+        nnoremap <expr> s substy#substitute_operator('\m')
+        noremap <expr> ss substy#substitute('\m', '', '')
+        noremap <expr> s/ substy#substitute('', @/, '')
+        noremap <expr> s? substy#substitute('', @/, @/)
+        noremap <expr> sg substy#global('', @/, '')
+        noremap <expr> sv substy#vglobal('', @/, '')
+        noremap <expr> sy substy#yank()
         for c in split('abcdefghijklmnopqrstuvwxyz0123456789*+.%/"', '\zs')
-            let mapcmd = 'noremap <expr> [sub]"%s substy#substitute("\\m", @%s, "")'
+            let mapcmd = 'noremap <expr> s"%s substy#substitute("\\m", @%s, "")'
             exec printf(mapcmd, c, c)
         endfor
 <
