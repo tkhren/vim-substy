@@ -7,6 +7,14 @@ let g:substy#substitute_default_flag = get(g:, 'substy#substitute_default_flag',
 let g:substy#_matches = []
 let s:placeholder = '{textobj}'
 
+function! s:split_lines(text) abort "{{{1
+    if type(a:text) ==# v:t_string
+        return split(a:text, '\n')
+    endif
+    return a:text
+endfunction
+"}}}1
+
 function! s:escape_and_join(magic, pattern_list) abort "{{{1
     let magic_chars = {
             \ '\v': '\.*+?={^$()|[&@~<>/',
@@ -28,14 +36,6 @@ function! s:capture_selection(...) abort "{{{1
     let lines = getreg('z', 1, 1)
     call setreg('z', saved_register[0], saved_register[1])
     return lines
-endfunction
-"}}}1
-
-function! s:split_lines(text) abort "{{{1
-    if type(a:text) ==# v:t_string
-        return split(a:text, '\n')
-    endif
-    return a:text
 endfunction
 "}}}1
 

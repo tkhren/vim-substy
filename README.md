@@ -7,8 +7,6 @@ which are to insert substitution template and to extract matches.
 
 ## Usage
 
-See `doc/substy.txt` or `:h substy` for detail.
-
 This plugin does not provide any mappings by default.
 Please add the below code to your vimrc or init.vim, and map them to your prefer keys.
 
@@ -92,6 +90,7 @@ And if you need submatch, please use `{count}` feature.
 For example, after you searched `/\v(\w+)\s*:\s*(\w+)` on a JSON buffer,
 `1sy` extracts a key list, and `2sy` extracts a value list.
 
+Please see `doc/substy.txt` or `:h substy` for detail.
 
 ## Installation
 
