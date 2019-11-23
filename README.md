@@ -3,9 +3,9 @@
 This is a Vim plugin to provide mapping functions to quickly input substitution command.
 
 This plugin has two main features,
-which are to insert substitution template and to extract hitted matches.
+which are to insert substitution template and to extract matches.
 
-## How to use
+## Usage
 
 See `doc/substy.txt` or `:h substy` for detail.
 
@@ -82,10 +82,10 @@ noremap <expr> s"" substy#substitute('\v', @", '')
 
 ### Extract matches
 
-`substy#yank()` is to extract hitted matches after you searched something,
+`substy#yank()` is to extract matches after you searched something,
 and yank into a register. The unnamed register (`"`) is used by default.
 
-If you mapped it to `sy`, you can paste hitted text with just typing `syp`
+If you mapped it to `sy`, you can paste matched text with just typing `syp`
 after you searched something.
 If you need to use the other registers, please type as like `"zsyp`.
 And if you need submatch, please use `{count}` feature.
