@@ -1,6 +1,6 @@
 *substy.txt*    Quickly input substitution command.           *substy*
 
-Version: 0.1.0
+Version: 1.0.0
 Author : tkhren <m.tkhren@gmail.com>
 License: MIT LICENSE
 
