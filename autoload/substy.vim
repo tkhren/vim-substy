@@ -7,7 +7,7 @@ let g:substy#substitute_default_flag = get(g:, 'substy#substitute_default_flag',
 let g:substy#_matches = []
 let s:placeholder = '{textobj}'
 
-function! s:escaped_pattern(magic, pattern_list) abort "{{{1
+function! s:escape_and_join(magic, pattern_list) abort "{{{1
     let magic_chars = {
             \ '\v': '\.*+?={^$()|[&@~<>/',
             \ '\m': '\.*^$[~/',
@@ -58,7 +58,7 @@ function! substy#substitute(magic, pattern, replacement, ...) abort "{{{1
         let offset += strdisplaywidth(a:replacement) + 1
     endif
 
-    let pattern = s:escaped_pattern(a:magic, patterns)
+    let pattern = s:escape_and_join(a:magic, patterns)
     let scommand = printf(":\<C-u>%ss/%s/%s/%s", crange, pattern, a:replacement, flag)
     call feedkeys(scommand . repeat("\<Left>", offset), 'in')
 endfunction
@@ -107,7 +107,7 @@ function! substy#global(magic, pattern, cmd) abort "{{{1
         let offset += strdisplaywidth(a:cmd) + 1
     endif
 
-    let pattern = s:escaped_pattern(a:magic, patterns)
+    let pattern = s:escape_and_join(a:magic, patterns)
     let gcommand = printf(":\<C-u>%sg/%s/%s", crange, pattern, a:cmd)
     call feedkeys(gcommand . repeat("\<Left>", offset), 'in')
 endfunction
@@ -142,7 +142,7 @@ function! substy#vglobal(magic, pattern, cmd) abort "{{{1
         let offset += strdisplaywidth(a:cmd) + 1
     endif
 
-    let pattern = s:escaped_pattern(a:magic, patterns)
+    let pattern = s:escape_and_join(a:magic, patterns)
     let gcommand = printf(":\<C-u>%sv/%s/%s", crange, pattern, a:cmd)
     call feedkeys(gcommand . repeat("\<Left>", offset), 'in')
 endfunction
